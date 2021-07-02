@@ -22,7 +22,8 @@ mPosrc macro r,c
     mov dl,c   ;indca la columna (0-79)
     mov ah,2   ;indica el servicio de la nterrupcion 
     int 10h
-endm
+endm   
+
 .model small
 .data
     LF equ 10 ; salto de linea
@@ -35,11 +36,18 @@ endm
     msjO2 db "2.- Vehiculos de transporte $" 
     msjO3 db "3.- Lenguajes de programacion $"
     msjop db "Escriba el numero de la opcion que desea: $"
-    msg2  db "Escriba la palabra que encuentre, o escriba exit para salir$",0
+    msg2  db "Escriba la palabra que encuentre, o escriba exit para salir: $",0
+    op db 0
+    mOp1 db "Sopa de letras: Animales $"
+    mOp2 db "Sopa de letras: Vehiculos de transporte $"
+    mOp3 db "Sopa de letras: Lenguajes de programacion $"  
     
 .code
-.start up  
+.start up    
 
+
+    menuPrincipal: 
+    
     mPosrc 1,20
     mImprimC msg1 
     mPosrc 3,4
@@ -51,7 +59,43 @@ endm
     mPosrc 6,4
     mImprimC msjO3 
     mPosrc 8,4  
-    mImprimC msjop
+    mImprimC msjop  
+    
+    call leer        ;Recoge la opcion de la sopa de letras deseada 
+    sub al, 30h      
+    mov op, al
+    mov al, 09h 
+    cmp op, 1
+    je opcion1
+    cmp op,2
+    je opcion2
+    jnz opcion3
+
+    
+    opcion1: 
+    mLimpia 
+    mPosrc 1,20
+    mImprimC mOp1  
+    mPosrc 3,4
+    mImprimC msg2
+    mPausa 
+    
+    opcion2:  
+    mLimpia 
+    mPosrc 1,20
+    mImprimC mOp2 
+    mPosrc 3,4
+    mImprimC msg2
+    mPausa
+    
+    opcion3: 
+    mLimpia 
+    mPosrc 1,20
+    mImprimC mOp3
+    mPosrc 3,4
+    mImprimC msg2
+    mPausa
+  
 
 .exit   
 
@@ -67,7 +111,13 @@ pPausa proc near
     mov ah, 07h
     int 21h
     ret
-pPausa endp
+pPausa endp  
+
+leer proc near 
+    mov ah, 01h ;leer desde el teclado 
+    int 21h
+    ret 
+leer endp
 
 end 
 
