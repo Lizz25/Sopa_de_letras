@@ -1,3 +1,19 @@
+llenarS macro palabra
+    local llenar,next,terminar
+    llenar:
+        mov al, palabra[si]
+        mov temp[si],al
+        cmp si,0
+        jnz next
+        jz terminar
+        
+    next:
+        sub si, 1
+        jmp llenar
+        
+    terminar:
+endm
+
 .model small
 .data
     LF equ 10 ; salto de linea
@@ -5,6 +21,7 @@
     TB equ 09 ; tab   
     ingreso db LF,"Ingreso: $"
     perro db "perro"
+    delfin db "delfin"
     
     sopa1 db "l a p e r r o c f t q c f t q",LF,CR
           db "r a t q u x u r a t q u t o r",LF,CR
@@ -26,8 +43,7 @@
     var1 db "Bien",LF,CR,"$"
     var2 db "Mal",LF,CR,"$"
     cadena db 15,?,15 dup(' ')
-    igual db 0
-          
+    temp db 15 dup(' ')      
           
 .code
 .start up    
@@ -91,40 +107,58 @@ mov dx,0000h
 mov dx, offset cadena
 mov ah, 0ah
 int 21h
-;mov bl, 2
+;;mov bl, 2
 mov cl,0
 
-recorrer:
-mov al, cadena[bx+2]
-mov ah, perro[bx]
-cmp al,ah
-jz esfin
-jnz mostrarm
+mov si,5
+llenarS delfin
 
 
-esfin:
-cmp bx,4
-jz mostrarb
-jnz aumentar
-
-aumentar:
-add bl,1
-jmp recorrer
-
-
-mostrarb:
-lea dx, var1
-mov ah, 09
-int 21h
-jmp salir
-
-mostrarm:
-lea dx, var2
-mov ah, 09
-int 21h
-jmp salir
-
-
+mov cl,5
+call verificarIn 
 
 salir:
 .exit
+   
+verificarIn     PROC
+    recorrer:
+        mov al, cadena[bx+2]
+        mov ah, temp[bx]
+        cmp al,ah
+        jz esfin
+        jnz mostrarm
+
+
+    esfin:
+        cmp bx,cx
+        jz finCadena
+        jnz aumentar
+
+    aumentar:
+        add bl,1
+        jmp recorrer
+    
+    finCadena:
+        mov al, cadena[1]
+        sub al,1
+        cmp bl,al
+        jz mostrarb
+        jnz mostrarm
+    
+    mostrarb:
+        lea dx, var1
+        mov ah, 09
+        int 21h
+        jmp termino
+
+    mostrarm:
+        lea dx, var2
+        mov ah, 09
+        int 21h
+        jmp termino
+        
+    termino:  
+        RET
+verificarIn     ENDP
+   
+end
