@@ -1,3 +1,5 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Macros ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 llenarS macro palabra
     local llenar,next,terminar
     llenar:
@@ -28,20 +30,46 @@ mLimpia macro
 endm
 
 verificarP macro lon texto inicio final
-    mov si,lon
-    llenarS texto
-    mov cl,lon
-    mov coordenadaI,inicio
-    mov coordenadaF,final
-    call verificarIn
+    local empezarVerificar,terminar
+     
+    mov al, cadena[1]
+    sub al,1
+    cmp al, lon
+    jb terminar
+    ja terminar
+    
+    empezarVerificar:
+        mov si,lon
+        llenarS texto
+        mov cl,lon
+        mov coordenadaI,inicio
+        mov coordenadaF,final
+        call verificarIn
+        
+    terminar:
+    
 endm
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 .model small
 .data
     LF equ 10 ; salto de linea
     CR equ 13 ; Retorno de carro
-    TB equ 09 ; tab   
+    TB equ 09 ; tab
     ingreso db LF,"Ingreso: $"
+    cadena db 15,?,15 dup(' ')
+    temp db 15 dup(' ')
+    coordenadaI dw ?
+    coordenadaF dw ?
+    aciertos db 0
+    esExit db 0
+    mExit db "exit"
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   Sopa - Animales ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Opcion1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
     perro db "perro"
     delfin db "delfin"
     gato db "gato"    
@@ -64,20 +92,17 @@ endm
           db "t f o d w c b q v n o h e d m",LF,CR
           db "a d w a n x n b a c m v w q r",LF,CR,"$"
           
-          
-    var1 db LF,CR,"Bien",LF,CR,"$"
-    var2 db LF,CR,"Mal",LF,CR,"$"
-    cadena db 15,?,15 dup(' ')
-    temp db 15 dup(' ')
-    coordenadaI dw ?
-    coordenadaF dw ?     
-          
+         
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;       
 .code
-.start up    
-                                                                       
+.start up
+                                                                
 mostrarMatriz:
     mLimpia
     mImprimC sopa1
+    cmp aciertos,5
+    jz salir
 
 pedirPalabra:
     mImprimC ingreso
@@ -88,60 +113,32 @@ pedirPalabra:
     mov dx, offset cadena
     mov ah, 0ah
     int 21h
-
-;Verificar leon
-    mov si,3
-    llenarS leon
-    mov cx,3
-    mov coordenadaI,0400h
-    mov coordenadaF,0700h
-    call verificarIn
     
-;Verificar perro
-    mov si,4
-    llenarS perro
-    mov cx,4
-    mov coordenadaI,0004h
-    mov coordenadaF,000Ch
-    call verificarIn
+mov esExit,1
+verificarP 3 mExit 0000h 0000h
 
-;Verificar delfin
-    mov si,5
-    llenarS delfin
-    mov cx,5
-    mov coordenadaI,0210h
-    mov coordenadaF,021Ah
-    call verificarIn
+mov esExit,0
+verificarP 3 leon 0400h 0700h
     
-;verificarP 5 delfin 0210h 021Ah
-
-;Verificar tiburon
-    mov si,6
-    llenarS tiburon
-    mov cx,6
-    mov coordenadaI,040Ah
-    mov coordenadaF,0A0Ah
-    call verificarIn
-
-;Verificar gato
-    mov si,3
-    llenarS gato
-    mov cx,3
-    mov coordenadaI,0811h
-    mov coordenadaF,0819h
-    call verificarIn
+verificarP 4 perro 0004h 000Ch
+    
+verificarP 5 delfin 0210h 021Ah
+    
+verificarP 6 tiburon 040Ah 0A0Ah
+    
+verificarP 3 gato 0811h 0819h
     
 salir:
 .exit
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;procedimientos;;;;;;;;;;;;;;;;;;;;;   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
 verificarIn     PROC
     mov bx,0
     mov al, cadena[1]
     sub al,1
     cmp al, cl
-    jb mostrarm
-    ja mostrarm
+    jb termino
+    ja termino
     
     recorrer:
         mov al, cadena[bx+2]
@@ -167,13 +164,20 @@ verificarIn     PROC
         jnz mostrarm
     
     mostrarb:
-        call resaltarP
-        jmp mostrarMatriz
+        cmp esExit,1
+        jz esSalida:
+        jnz continuar
+        
+    continuar:
+       add aciertos,1
+       call resaltarP
+       jmp mostrarMatriz 
+        
+    esSalida:
+        jmp salir
+    
 
     mostrarm:
-        ;lea dx, var2
-        ;mov ah, 09
-        ;int 21h
         jmp termino
         
     termino: 
@@ -189,6 +193,6 @@ resaltarP PROC
     RET
 resaltarP ENDP
     
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
 end
