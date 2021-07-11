@@ -14,6 +14,28 @@ llenarS macro palabra
     terminar:
 endm
 
+mImprimC macro t
+    lea dx, t
+    mov ah, 09h
+    int 21h    
+endm
+
+mLimpia macro 
+    mov ah, 0FH
+    int 10h
+    mov ah,0
+    int 10h
+endm
+
+verificarP macro lon texto inicio final
+    mov si,lon
+    llenarS texto
+    mov cl,lon
+    mov coordenadaI,inicio
+    mov coordenadaF,final
+    call verificarIn
+endm
+
 .model small
 .data
     LF equ 10 ; salto de linea
@@ -22,6 +44,9 @@ endm
     ingreso db LF,"Ingreso: $"
     perro db "perro"
     delfin db "delfin"
+    gato db "gato"    
+    tiburon db "tiburon"
+    leon db "leon"
     
     sopa1 db "l a p e r r o c f t q c f t q",LF,CR
           db "r a t q u x u r a t q u t o r",LF,CR
@@ -40,94 +65,90 @@ endm
           db "a d w a n x n b a c m v w q r",LF,CR,"$"
           
           
-    var1 db "Bien",LF,CR,"$"
-    var2 db "Mal",LF,CR,"$"
+    var1 db LF,CR,"Bien",LF,CR,"$"
+    var2 db LF,CR,"Mal",LF,CR,"$"
     cadena db 15,?,15 dup(' ')
-    temp db 15 dup(' ')      
+    temp db 15 dup(' ')
+    coordenadaI dw ?
+    coordenadaF dw ?     
           
 .code
 .start up    
+                                                                       
+mostrarMatriz:
+    mLimpia
+    mImprimC sopa1
 
-;mov ax,0000h
-;mov bx,0000h 
-;mov cx,0000h 
-;mov dx,0000h 
-
-;RESALTAR LEON
-;MOV Ah,06h ;modo video (creo)    al -> (No he probado como funciona dandole valor)
-;MOV BH,00001110b ;color que se modifico 0 ->parpadeo 000 -> color fondo 0000 ->Color fuente
-;MOV CX,0400h ; pixeles de donde empieza a colorear   ch ->fila    cl->columna
-;MOV DX,0700h ; pixeles de donde termina de colorear  dh ->fila    dl->columna
-;INT 10H  
-
-
-;RESALTAR PERRO
-;MOV Ah,06h 
-;MOV BH,00001110b 
-;MOV CX,0004h 
-;MOV DX,000Ch 
-;INT 10H 
-
-
-;RESALTAR TIBURON
-;MOV Ah,06h 
-;MOV BH,00001110b 
-;MOV CX,040Ah 
-;MOV DX,0A0Ah
-;INT 10H
-
-
-;RESALTAR DELFIN
-;MOV Ah,06h 
-;MOV BH,00001110b 
-;MOV CX,0210h 
-;MOV DX,021Ah
-;INT 10H
-
-
-;RESALTAR GATO
-;MOV Ah,06h 
-;MOV BH,00001110b 
-;MOV CX,0811h 
-;MOV DX,0819h
-;INT 10H
- 
-;lea dx, sopa1
-;mov ah, 09
-;int 21h  
-
-;Pedir palabra 
- 
 pedirPalabra:
-mov ax,0000h
-mov bx,0000h 
-mov cx,0000h 
-mov dx,0000h 
+    mImprimC ingreso
+    mov ax,0000h
+    mov bx,0000h 
+    mov cx,0000h 
+    mov dx,0000h 
+    mov dx, offset cadena
+    mov ah, 0ah
+    int 21h
 
-mov dx, offset cadena
-mov ah, 0ah
-int 21h
-;;mov bl, 2
-mov cl,0
+;Verificar leon
+    mov si,3
+    llenarS leon
+    mov cx,3
+    mov coordenadaI,0400h
+    mov coordenadaF,0700h
+    call verificarIn
+    
+;Verificar perro
+    mov si,4
+    llenarS perro
+    mov cx,4
+    mov coordenadaI,0004h
+    mov coordenadaF,000Ch
+    call verificarIn
 
-mov si,5
-llenarS delfin
+;Verificar delfin
+    mov si,5
+    llenarS delfin
+    mov cx,5
+    mov coordenadaI,0210h
+    mov coordenadaF,021Ah
+    call verificarIn
+    
+;verificarP 5 delfin 0210h 021Ah
 
+;Verificar tiburon
+    mov si,6
+    llenarS tiburon
+    mov cx,6
+    mov coordenadaI,040Ah
+    mov coordenadaF,0A0Ah
+    call verificarIn
 
-mov cl,5
-call verificarIn 
-
+;Verificar gato
+    mov si,3
+    llenarS gato
+    mov cx,3
+    mov coordenadaI,0811h
+    mov coordenadaF,0819h
+    call verificarIn
+    
 salir:
 .exit
-   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;procedimientos;;;;;;;;;;;;;;;;;;;;;   
 verificarIn     PROC
+    mov bx,0
+    mov al, cadena[1]
+    sub al,1
+    cmp al, cl
+    jb mostrarm
+    ja mostrarm
+    
     recorrer:
         mov al, cadena[bx+2]
         mov ah, temp[bx]
         cmp al,ah
         jz esfin
         jnz mostrarm
-
 
     esfin:
         cmp bx,cx
@@ -146,19 +167,28 @@ verificarIn     PROC
         jnz mostrarm
     
     mostrarb:
-        lea dx, var1
-        mov ah, 09
-        int 21h
-        jmp termino
+        call resaltarP
+        jmp mostrarMatriz
 
     mostrarm:
-        lea dx, var2
-        mov ah, 09
-        int 21h
+        ;lea dx, var2
+        ;mov ah, 09
+        ;int 21h
         jmp termino
         
-    termino:  
+    termino: 
         RET
 verificarIn     ENDP
-   
+
+resaltarP PROC
+    MOV Ax,0600h  ;modo video (creo)
+    MOV BH,00001110b ;color que se modifico 0 ->parpadeo 000 -> color fondo 0000 ->Color fuente
+    MOV CX,coordenadaI   ; pixeles de donde empieza a colorear   ch ->fila    cl->columna
+    MOV DX,coordenadaF   ; pixeles de donde termina de colorear  dh ->fila    dl->columna
+    INT 10H   
+    RET
+resaltarP ENDP
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
 end
