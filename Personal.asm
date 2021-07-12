@@ -234,7 +234,9 @@ pedirPalabra:
     mov dx,0000h 
     mov dx, offset cadena
     mov ah, 0ah
-    int 21h
+    int 21h   
+    
+call convertir
     
 mov esExit,1
 verificarP 3 mExit 0000h 0000h
@@ -314,6 +316,42 @@ resaltarP PROC
     INT 10H   
     RET
 resaltarP ENDP
+
+convertir PROC
+    mov cx,0
+    mov si,0
+    mov cl,cadena[1]
+    inicio:
+        mov al, cadena[si+2]
+        cmp si,cx
+        je FinPalabra
+        
+        cmp al,20h
+        je espacio
+        
+        cmp al,41h
+        jb guardar
+        
+        cmp al,5ah
+        ja guardar
+        
+        add al,20h
+        
+    guardar:
+        mov cadena[si+2],al
+        inc si
+        jmp inicio
+        
+    espacio:
+        inc si
+        jmp inicio        
+        
+        
+     FinPalabra:
+        RET
+    
+    
+convertir ENDP
     
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
