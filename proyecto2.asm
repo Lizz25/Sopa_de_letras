@@ -547,7 +547,7 @@ endm
         verificarP 3 java 0610h 0616h
         verificarP 3 ruby 090ch 0912h
         verificarP 5 python 0C0Ah 110Ah
-        verificarP 4 swift 0D18h 0520h   
+        verificarP 4 swift 0D18h 0D20h   
         verificarP 3 dart 0512h 0812h
     
     LProgramacion2:
@@ -571,11 +571,11 @@ endm
         verificarP 3 mExit 0000h 0000h
 
         mov esExit,0
-        verificarP 2 php 030Ch 060Ch
+        verificarP 2 php 040Ch 060Ch
         verificarP 9 javascript 0816h 1116h
         verificarP 3 java 0F1Ah 0F20h
         verificarP 5 python 0312h 031Ch   
-        verificarP 5 kotlin 0416h 0916h
+        verificarP 5 kotlin 0420h 0920h
     
 
   
