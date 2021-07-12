@@ -641,6 +641,7 @@ verificarIn     PROC
        jmp mostrarMatriz 
         
     esSalida:
+        call colorearNegro
         mLimpia
         jmp menuPrincipal
     
