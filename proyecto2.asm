@@ -17,12 +17,24 @@ mImprimC macro t
 endm
 
 mPosrc macro r,c
-    mov bh,0   ;indica la pantalla
-    mov dh,r   ;ndica el renglon(0-24)
-    mov dl,c   ;indca la columna (0-79)
-    mov ah,2   ;indica el servicio de la nterrupcion 
+    mov bh,0     ;indica la pantalla
+    mov dh,r     ;indica el renglon(0-24)
+    mov dl,c     ;indca la columna (0-79)
+    mov ah,2     ;indica el servicio de la interrupcion 
     int 10h
-endm   
+endm 
+
+mValidarNum macro n1  ;valida que se ingrese un numero valido en el menu 
+    lea dx, msjError
+    mov ah, 09h
+    int 21h
+    cmp n1, 0
+    jna ObtenerOp
+    cmp n1,3
+    ja ObtenerOp
+    cmp n1, 9
+    ja ObtenerOp
+endm  
 
 .model small
 .data
@@ -30,41 +42,34 @@ endm
     CR equ 13 ; Retorno de carro
     TB equ 09 ; tab
     var1 db ?
-    msg1 db "-----------** Sopa de letras **----------- $"
-    msjE db "Elija una tematica para su sopa de letra $"
-    msjO1 db "1.- Animales $"
-    msjO2 db "2.- Vehiculos de transporte $" 
-    msjO3 db "3.- Lenguajes de programacion $"
-    msjop db "Escriba el numero de la opcion que desea: $"
-    msg2  db "Escriba la palabra que encuentre, o escriba exit para salir: $",0
+    menu1 db "-----------** Sopa de letras **-----------"  ,LF,CR,LF,TB
+         db  "Elija una tematica para su sopa de letra "  ,LF,CR,TB 
+         db   "1.- Animales "                            ,LF,CR,TB 
+         db   "2.- Vehiculos de transporte "              ,LF,CR,TB
+         db   "3.- Lenguajes de programacion "            ,LF,CR,,TB,LF
+         db   "Escriba el numero de la opcion que desea: $",LF,CR 
     op db 0
     mOp1 db "Sopa de letras: Animales $"
     mOp2 db "Sopa de letras: Vehiculos de transporte $"
-    mOp3 db "Sopa de letras: Lenguajes de programacion $"  
+    mOp3 db "Sopa de letras: Lenguajes de programacion $"   
+    volver db 0 
+    msjError db CR,LF,TB, "Ingrese una opcion correcta: $"
     
 .code
 .start up    
 
 
     menuPrincipal: 
-    
     mPosrc 1,20
-    mImprimC msg1 
-    mPosrc 3,4
-    mImprimC msjE
-    mPosrc 4,4
-    mImprimC msjO1 
-    mPosrc 5,4
-    mImprimC msjO2
-    mPosrc 6,4
-    mImprimC msjO3 
-    mPosrc 8,4  
-    mImprimC msjop  
+    mImprimC menu1 
     
-    call leer        ;Recoge la opcion de la sopa de letras deseada 
+    ObtenerOp:         ;Recoge la opcion y valida que el numero ngresado sea correcto 
+    call leer         
     sub al, 30h      
-    mov op, al
-    mov al, 09h 
+    mov op, al 
+    mValidarNum op
+     
+     
     cmp op, 1
     je opcion1
     cmp op,2
@@ -77,15 +82,16 @@ endm
     mPosrc 1,20
     mImprimC mOp1  
     mPosrc 3,4
-    mImprimC msg2
-    mPausa 
+    ;mImprimC msg2
+    mPausa
+    
     
     opcion2:  
     mLimpia 
     mPosrc 1,20
     mImprimC mOp2 
     mPosrc 3,4
-    mImprimC msg2
+    ;mImprimC msg2
     mPausa
     
     opcion3: 
@@ -93,7 +99,7 @@ endm
     mPosrc 1,20
     mImprimC mOp3
     mPosrc 3,4
-    mImprimC msg2
+    ;mImprimC msg2
     mPausa
   
 
@@ -117,7 +123,8 @@ leer proc near
     mov ah, 01h ;leer desde el teclado 
     int 21h
     ret 
-leer endp
+leer endp  
+
+ 
 
 end 
-
