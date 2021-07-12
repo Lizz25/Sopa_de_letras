@@ -655,7 +655,7 @@ verificarIn     ENDP
 
 resaltarP PROC
     MOV Ax,0600h  ;modo video (creo)
-    MOV BH,00011110b ;color que se modifico 0 ->parpadeo 000 -> color fondo 0000 ->Color fuente
+    MOV BH,00001110b ;color que se modifico 0 ->parpadeo 000 -> color fondo 0000 ->Color fuente
     MOV CX,coordenadaI   ; pixeles de donde empieza a colorear   ch ->fila    cl->columna
     MOV DX,coordenadaF   ; pixeles de donde termina de colorear  dh ->fila    dl->columna
     INT 10H   
@@ -665,8 +665,8 @@ resaltarP ENDP
 colorearNegro PROC
     MOV Ax,0600h
     MOV BH,00000000b
-    MOV CX,1600  
-    MOV DX,2100 
+    MOV CX,0000h  
+    MOV DX,fefeh 
     INT 10H   
     RET              
                   
