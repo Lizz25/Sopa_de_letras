@@ -46,22 +46,30 @@ endm
     
     var1 db ?
     menu1 db "-----------** Sopa de letras **-----------"  ,LF,CR,LF,TB
-          db "Elija una tematica para su sopa de letra "  ,LF,CR,TB 
-          db "1.- Animales "                            ,LF,CR,TB 
-          db "2.- Vehiculos de transporte "              ,LF,CR,TB
-          db "3.- Lenguajes de programacion "            ,LF,CR,,TB,LF
-          db "Escriba el numero de la opcion que desea: $",LF,CR 
+          db "Elija una tematica para su sopa de letra "   ,LF,CR,TB 
+          db "1.- Animales "                               ,LF,CR,TB 
+          db "2.- Vehiculos de transporte "                ,LF,CR,TB
+          db "3.- Lenguajes de programacion "              ,LF,CR,,TB,LF
+          db "Escriba el numero de la opcion que desea: $" ,LF,CR 
     
     op db 0
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Pantalla - Juego ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
     mOp1 db "Sopa de letras: Animales $"
-    mOp2 db "Sopa de letras: Vehiculos de transporte $"
-    mOp3 db "Sopa de letras: Lenguajes de programacion $"   
+    mOp2 db "Sopa de letras: Vehiculos de transporte $",LF
+    mOp3 db "Sopa de letras: Lenguajes de programacion $",LF   
     volver db 0 
     msjError db CR,LF,TB, "Ingrese una opcion correcta: $"
-    ingreso db LF,"Ingreso: $"
+    
+    juego db "Escoja una opcion de juego" ,LF,CR,TB
+          db "Juego 1"                    ,LF,CR,TB
+          db "Juego 2 "                   ,LF,CR,TB,LF 
+          db "Escriba el numero: $"       ,LF,CR 
+    
+    op2 db 0
+    
+    ingreso db LF,"Ingrese la palabra encontrada: $"
     cadena db 15,?,15 dup(' ')
     temp db 15 dup(' ')
     coordenadaI dw ?
@@ -134,7 +142,7 @@ endm
     sopaT1 db "c s g a s f e c f t q c f t q",LF,CR
            db "a a t q u x u r b a r c o o r",LF,CR
            db "r r w v b a r c d e s c z x o",LF,CR
-           db "r r e m o t o b p a m b w x q",LF,CR 
+           db "r r e m o t o b p a m b w x q",LF,CR                                            
            db "o g d t d t f d i v v z v v c",LF,CR
            db "e r c e c c w s y b f v x d x",LF,CR
            db "b e z d b p e a r i m v x g z",LF,CR
@@ -221,8 +229,7 @@ endm
            db "a d w a n x n t a c m v w q r",LF,CR,"$"
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
     
 .code
 .start up    
@@ -232,12 +239,11 @@ endm
     mPosrc 1,20
     mImprimC menu1 
     
-    ObtenerOp:         ;Recoge la opcion y valida que el numero ngresado sea correcto 
+    ObtenerOp:         ;Recoge la opcion y valida que el numero ingresado sea correcto 
     call leer         
     sub al, 30h      
     mov op, al 
     mValidarNum op
-     
      
     cmp op, 1
     je opcion1
@@ -245,14 +251,93 @@ endm
     je opcion2
     jnz opcion3
 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Opcion1: Animales;;;;;;;;;;;;;;;;;;;;;;;;;;; 
     
     opcion1: 
     mLimpia 
     mPosrc 1,20
-    mImprimC mOp1  
-    mPosrc 3,4
-    ;mImprimC msg2
+    mImprimC mOp1
+    mPosrc 3,8
+    mImprimC juego 
     mPausa
+    ObtenerOpA:         ;Recoge la opcion y valida que el numero ingresado sea correcto 
+    call leer         
+    sub al, 30h      
+    mov op, al 
+    mValidarNum op 
+    
+    cmp op,1
+    je Animales1
+    cmp op,2
+    ;je Animales2
+    cmp op,3
+    je ObtenerOpA
+    
+    ;------------Sopa 1--------------;
+    
+    Animales1:
+    
+    mostrarMatriz:
+    ;mLimpia
+    mPosrc 10,0
+    mImprimC sopaA1
+    mPausa
+    ;cmp aciertos,5
+    ;jz salir
+
+    ;pedirPalabra:
+    ;mImprimC ingreso
+    ;mov ax,0000h
+    ;mov bx,0000h 
+    ;mov cx,0000h 
+    ;mov dx,0000h 
+    ;mov dx, offset cadena
+    ;mov ah, 0ah
+    ;int 21h   
+    
+    ;call convertir
+    
+    ;mov esExit,1
+    ;verificarP 3 mExit 0000h 0000h
+
+    ;mov esExit,0
+    ;verificarP 3 leon 0400h 0700h
+    
+    ;verificarP 4 perro 0004h 000Ch
+    
+    ;verificarP 5 delfin 0210h 021Ah
+    
+    ;verificarP 6 tiburon 040Ah 0A0Ah
+    
+    ;verificarP 3 gato 0811h 0819h
+    
+    ;------------Sopa 2--------------;
+    
+    ;mov esExit,1
+    ;verificarP 3 mExit 0000h 0000h
+
+    ;mov esExit,0
+    ;verificarP 3 leon 0400h 0700h
+    
+    ;verificarP 4 perro 0004h 000Ch
+    
+    ;verificarP 5 delfin 0210h 021Ah
+    
+    ;verificarP 6 tiburon 040Ah 0A0Ah
+    
+    ;verificarP 3 gato 0811h 0819h
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     opcion2:  
@@ -271,7 +356,7 @@ endm
     ;mImprimC msg2
     mPausa
   
-
+salir:
 .exit   
 
 pLimpia proc near 
@@ -292,7 +377,43 @@ leer proc near
     mov ah, 01h ;leer desde el teclado 
     int 21h
     ret 
-leer endp  
+leer endp   
+
+convertir PROC
+    mov cx,0
+    mov si,0
+    mov cl,cadena[1]
+    inicio:
+        mov al, cadena[si+2]
+        cmp si,cx
+        je FinPalabra
+        
+        cmp al,20h
+        je espacio
+        
+        cmp al,41h
+        jb guardar
+        
+        cmp al,5ah
+        ja guardar
+        
+        add al,20h
+        
+    guardar:
+        mov cadena[si+2],al
+        inc si
+        jmp inicio
+        
+    espacio:
+        inc si
+        jmp inicio        
+        
+        
+     FinPalabra:
+        RET
+    
+    
+convertir ENDP
 
  
 
