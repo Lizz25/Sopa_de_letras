@@ -26,16 +26,53 @@ mPosrc macro r,c
     int 10h
 endm 
 
-mValidarNum macro n1  ;valida que se ingrese un numero valido en el menu 
+
+ValidarOp macro n1
+    local err, sValidacion, vBien
+    cmp n1,31h
+    jz vBien
+    cmp n1,32h
+    jz vBien
+    cmp n1,33h
+    jz vBien
+    cmp n1,34h
+    jnz err
+    
+    
+    vBien:
+    mov opcionValida,1
+    jmp sValidacion
+     
+    err:
+    mov opcionValida,0
     lea dx, msjError
     mov ah, 09h
     int 21h
-    cmp n1, 0
-    jna ObtenerOp
-    cmp n1,3
-    ja ObtenerOp
-    cmp n1, 9
-    ja ObtenerOp
+     
+    sValidacion:
+    
+endm
+
+ValidarOp2 macro n1
+    local err, sValidacion, vBien
+    cmp n1,31h
+    jz vBien
+    cmp n1,32h
+    jz vBien
+    jnz err
+    
+    vBien:
+    mov opcionValida,1
+    jmp sValidacion
+     
+    err:
+    mov opcionValida,0
+    lea dx, msjError
+    mov ah, 09h
+    int 21h
+     
+    sValidacion:
+    
 endm
 
 llenarS macro palabra
@@ -91,10 +128,13 @@ endm
           db "Elija una tematica para su sopa de letra "   ,LF,CR,TB 
           db "1.- Animales "                               ,LF,CR,TB 
           db "2.- Vehiculos de transporte "                ,LF,CR,TB
-          db "3.- Lenguajes de programacion "              ,LF,CR,,TB,LF
+          db "3.- Lenguajes de programacion "              ,LF,CR,TB
+          db "4.- Salir "              ,LF,CR,TB,LF
           db "Escriba el numero de la opcion que desea: $" ,LF,CR 
     
     op db 0
+    
+    opcionValida db 1
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Pantalla - Juego ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
@@ -103,6 +143,7 @@ endm
     mOp3 db "Sopa de letras: Lenguajes de programacion $",LF   
     volver db 0 
     msjError db CR,LF,TB, "Ingrese una opcion correcta: $"
+    ganador db CR,LF,"FELICIDADES!! GANASTE...",CR,LF,"$"
     
     juego db "Escoja una opcion de juego" ,LF,CR,TB
           db "Juego 1"                    ,LF,CR,TB
@@ -282,18 +323,19 @@ endm
         mImprimC menu1 
     
     ObtenerOp:         ;Recoge la opcion y valida que el numero ingresado sea correcto 
-        call leer         
-        sub al, 30h      
+        call leer               
         mov op, al 
-        mValidarNum op
+        ValidarOp op
+        cmp opcionValida,0
+        jz ObtenerOp
      
-        cmp op, 1
+        cmp op,31h
         je opcion1
-        
-        cmp op,2
+        cmp op,32h
         je opcion2
-        
-        jnz opcion3
+        cmp op,33h
+        je opcion3
+        jnz salir
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Opcion1: Animales;;;;;;;;;;;;;;;;;;;;;;;;;;; 
     
@@ -301,106 +343,229 @@ endm
         mLimpia 
         mPosrc 1,20
         mImprimC mOp1
-        mPosrc 3,8
-        mImprimC juego 
-        mPausa
+        jmp ObtenerOpJ 
+     
+    opcion2:  
+        mLimpia 
+        mPosrc 1,20
+        mImprimC mOp2 
+        jmp ObtenerOpJ
         
+    opcion3:  
+        mLimpia 
+        mPosrc 1,20
+        mImprimC mOp2 
+        jmp ObtenerOpj       
+     
+        
+    ObtenerOpJ:
+        mPosrc 3,8
+        mImprimC juego
+    
     ObtenerOpA:         ;Recoge la opcion y valida que el numero ingresado sea correcto 
-        call leer         
-        sub al, 30h      
-        mov op, al 
-        mValidarNum op 
-    
-        cmp op,1
-        je Animales1
-        cmp op,2
-        ;je Animales2
-        cmp op,3
-        je ObtenerOpA
-    
-    ;------------Sopa 1--------------;
-    
-    Animales1:
+        call leer               
+        mov op2, al 
+        ValidarOp2 op2
+        cmp opcionValida,0
+        jz ObtenerOpA
     
     mostrarMatriz:
         mLimpia
         mPosrc 1,20
+        
+    VerCategoria:
+        cmp op, 31h
+        je Animales
+        cmp op,32h
+        je Transportes
+        jnz LProgramacion
+     
+    Animales:
         mImprimC mOp1  
         mPosrc 3,8
+        cmp op2, 31h
+        jz Animales1
+        jnz Animales2
+    
+    Transportes:
+        mImprimC mOp2  
+        mPosrc 3,8
+        cmp op2, 31h
+        jz Transportes1
+        jnz Transportes2
+    
+    LProgramacion:
+        mImprimC mOp3  
+        mPosrc 3,8
+        cmp op2, 31h
+        jz LProgramacion1
+        jnz LProgramacion2
+    
+        
+    Animales1:   
         mImprimC sopaA1
         cmp aciertos,5
-        jz menuPrincipal
+        jz gano1
+        jnz pedirPalabra1
+        
+        gano1:
+            mImprimC ganador
+            mPausa
+            call colorearNegro
+            mLimpia
+            jmp menuPrincipal
+            
 
-    pedirPalabra:
-        mImprimC ingreso
-        mov ax,0000h
-        mov bx,0000h 
-        mov cx,0000h 
-        mov dx,0000h 
-        mov dx, offset cadena
-        mov ah, 0ah
-        int 21h   
+        pedirPalabra1:
+        call leerString       
     
-    call convertir
-    
-    mov esExit,1
-    verificarP 3 mExit 0000h 0000h
+        call convertir
+        mov esExit,1
+        verificarP 3 mExit 0000h 0000h
 
-    mov esExit,0
-    verificarP 3 leon 0400h 0700h
+        mov esExit,0
+        verificarP 3 leon 0708h 0A08h
+        verificarP 4 perro 030Ch 0314h
+        verificarP 5 delfin 0518h 0522h
+        verificarP 6 tiburon 0712h 0C12h   
+        verificarP 3 gato 0B1Ah 0B20h
     
-    verificarP 4 perro 0004h 000Ch
-    
-    verificarP 5 delfin 0210h 021Ah
-    
-    verificarP 6 tiburon 040Ah 0A0Ah
-    
-    verificarP 3 gato 0811h 0819h
-    
-    ;------------Sopa 2--------------;
-    
-    ;mov esExit,1
-    ;verificarP 3 mExit 0000h 0000h
+    Animales2:
+        mImprimC sopaA2
+        cmp aciertos,5
+        jz gano2
+        jnz pedirPalabra2
+        
+        gano2:
+            mImprimC ganador
+            mPausa
+            call colorearNegro
+            mLimpia
+            jmp menuPrincipal
 
-    ;mov esExit,0
-    ;verificarP 3 leon 0400h 0700h
+        pedirPalabra2:
+        call leerString       
     
-    ;verificarP 4 perro 0004h 000Ch
+        call convertir
+        mov esExit,1
+        verificarP 3 mExit 0000h 0000h
+
+        mov esExit,0
+        verificarP 4 llama 0324h 0724h
+        verificarP 3 buey 100Ah 1010h
+        verificarP 6 caballo 0A0Ch 0A18h
+        verificarP 5 jirafa 0A1Ah 0F1Ah   
+        verificarP 7 avestruz 060Ch 061Ah
     
-    ;verificarP 5 delfin 0210h 021Ah
+    Transportes1:
+        mImprimC sopaT1
+        cmp aciertos,5
+        jz gano3
+        jnz pedirPalabra3
+        
+        gano3:
+            mImprimC ganador
+            mPausa
+            call colorearNegro
+            mLimpia
+            jmp menuPrincipal
+
+        pedirPalabra3:
+        call leerString       
     
-    ;verificarP 6 tiburon 040Ah 0A0Ah
+        call convertir
+        mov esExit,1
+        verificarP 3 mExit 0000h 0000h
+
+        mov esExit,0
+        verificarP 4 barco 0418h 0420h
+        verificarP 4 carro 0308h 0708h
+        verificarP 3 moto 060Eh 0614h
+        verificarP 8 bicicleta 081Ah 101Ah   
+        verificarP 4 avion 0D10h 0D18h
     
-    ;verificarP 3 gato 0811h 0819h
+    Transportes2:
+        mImprimC sopaT2
+        cmp aciertos,5
+        jz gano4
+        jnz pedirPalabra4
+        
+        gano4:
+            mImprimC ganador
+            mPausa
+            call colorearNegro
+            mLimpia
+            jmp menuPrincipal
+
+        pedirPalabra4:
+        call leerString       
     
+        call convertir
+        mov esExit,1
+        verificarP 3 mExit 0000h 0000h
+
+        mov esExit,0
+        verificarP 3 tren 0D1Ah 0D20h
+        verificarP 3 yate 100Ah 1010h
+        verificarP 8 submarino 0A14h 0A24h
+        verificarP 4 ferry 040Ch 080Ch   
+        verificarP 4 canoa 0316h 0716h
     
+    LProgramacion1:
+        mImprimC sopaP1
+        cmp aciertos,5
+        jz gano5
+        jnz pedirPalabra5
+        
+        gano5:
+            mImprimC ganador
+            mPausa    
+            call colorearNegro
+            mLimpia
+            jmp menuPrincipal
+
+        pedirPalabra5:
+        call leerString       
     
+        call convertir
+        mov esExit,1
+        verificarP 3 mExit 0000h 0000h
+
+        mov esExit,0
+        verificarP 3 java 0610h 0616h
+        verificarP 3 ruby 090ch 0912h
+        verificarP 5 python 0C0Ah 110Ah
+        verificarP 4 swift 0D18h 0520h   
+        verificarP 3 dart 0512h 0812h
     
+    LProgramacion2:
+        mImprimC sopaP2
+        cmp aciertos,5
+        jz gano6
+        jnz pedirPalabra6
+        
+        gano6:
+            mImprimC ganador
+            mPausa
+            call colorearNegro
+            mLimpia
+            jmp menuPrincipal
+
+        pedirPalabra6:
+        call leerString       
     
+        call convertir
+        mov esExit,1
+        verificarP 3 mExit 0000h 0000h
+
+        mov esExit,0
+        verificarP 2 php 030Ch 060Ch
+        verificarP 9 javascript 0816h 1116h
+        verificarP 3 java 0F1Ah 0F20h
+        verificarP 5 python 0312h 031Ch   
+        verificarP 5 kotlin 0416h 0916h
     
-    
-    
-    
-    
-    
-    
-    
-    
-    opcion2:  
-    mLimpia 
-    mPosrc 1,20
-    mImprimC mOp2 
-    mPosrc 3,4
-    ;mImprimC msg2
-    mPausa
-    
-    opcion3: 
-    mLimpia 
-    mPosrc 1,20
-    mImprimC mOp3
-    mPosrc 3,4
-    ;mImprimC msg2
-    mPausa
+
   
 salir:
     .exit
@@ -408,25 +573,31 @@ salir:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
 
+leer proc near 
+    mov ah, 01h ;leer desde el teclado 
+    int 21h
+    ret 
+leer endp
+
 pLimpia proc near 
     mov ah, 0FH
     int 10h
     mov ah,0
     int 10h    
     ret
-pLimpia endp   
-
-pPausa proc near
-    mov ah, 07h
+pLimpia endp
+  
+leerString PROC
+    mImprimC ingreso
+    mov ax,0000h
+    mov bx,0000h 
+    mov cx,0000h 
+    mov dx,0000h 
+    mov dx, offset cadena
+    mov ah, 0ah
     int 21h
-    ret
-pPausa endp  
-
-leer proc near 
-    mov ah, 01h ;leer desde el teclado 
-    int 21h
-    ret 
-leer endp   
+    RET   
+leerString ENDP   
 
 verificarIn     PROC
     mov bx,0
@@ -470,7 +641,8 @@ verificarIn     PROC
        jmp mostrarMatriz 
         
     esSalida:
-        jmp salir
+        mLimpia
+        jmp menuPrincipal
     
 
     mostrarm:
