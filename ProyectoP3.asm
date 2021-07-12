@@ -57,8 +57,8 @@ endm
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Pantalla - Juego ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
     mOp1 db "Sopa de letras: Animales $"
-    mOp2 db "Sopa de letras: Vehiculos de transporte $",LF
-    mOp3 db "Sopa de letras: Lenguajes de programacion $",LF   
+    mOp2 db "Sopa de letras: Vehiculos de transporte $"
+    mOp3 db "Sopa de letras: Lenguajes de programacion $"   
     volver db 0 
     msjError db CR,LF,TB, "Ingrese una opcion correcta: $"
     
@@ -280,7 +280,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp1
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC sopaA1
     ;cmp aciertos,5
     ;jz salir
@@ -318,7 +318,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp1
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC sopaA2
     ;cmp aciertos,5
     ;jz salir
@@ -355,7 +355,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp2
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC juego 
     ObtenerOpT:         ;Recoge la opcion y valida que el numero ingresado sea correcto 
     call leer         
@@ -378,7 +378,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp2
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC sopaT1
     ;cmp aciertos,5
     ;jz salir
@@ -416,7 +416,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp2
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC sopaT2
     ;cmp aciertos,5
     ;jz salir
@@ -452,7 +452,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp3
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC juego 
     
     ObtenerOpP:         ;Recoge la opcion y valida que el numero ingresado sea correcto 
@@ -476,7 +476,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp3
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC sopaP1
     ;cmp aciertos,5
     ;jz salir
@@ -514,7 +514,7 @@ endm
     mLimpia 
     mPosrc 1,20
     mImprimC mOp3
-    mPosrc 3,8
+    mPosrc 3,0
     mImprimC sopaP2
     ;cmp aciertos,5
     ;jz salir
