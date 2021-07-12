@@ -664,9 +664,9 @@ resaltarP ENDP
 
 colorearNegro PROC
     MOV Ax,0600h
-    MOV BH,00000000b
+    MOV BH,00001111b
     MOV CX,0000h  
-    MOV DX,fefeh 
+    MOV DX,484Fh 
     INT 10H   
     RET              
                   
