@@ -1,5 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Macros ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;Limpia la pantalla
 mLimpia macro 
     mov ah, 0FH
     int 10h
@@ -7,17 +9,20 @@ mLimpia macro
     int 10h
 endm 
 
+;Espera una entrada para simular una pausa
 mPausa macro
     mov ah,07h
     int 21h
 endm
 
+;Macro para mostrar por pantalla un string terminado en $
 mImprimC macro t
     lea dx, t
     mov ah, 09h
     int 21h    
 endm
 
+;Macro para posicionar el puntero en la pantalla
 mPosrc macro r,c
     mov bh,0     ;indica la pantalla
     mov dh,r     ;indica el renglon(0-24)
@@ -26,7 +31,7 @@ mPosrc macro r,c
     int 10h
 endm 
 
-
+;Macro para validar el ingreso del menu principal
 ValidarOp macro n1
     local err, sValidacion, vBien
     cmp n1,31h
@@ -37,8 +42,7 @@ ValidarOp macro n1
     jz vBien
     cmp n1,34h
     jnz err
-    
-    
+      
     vBien:
     mov opcionValida,1
     jmp sValidacion
@@ -52,7 +56,8 @@ ValidarOp macro n1
     sValidacion:
     
 endm
-
+     
+;Macro para validar el ingreso del segundo menu para eligir el juego 1 o 2   
 ValidarOp2 macro n1
     local err, sValidacion, vBien
     cmp n1,31h
@@ -74,7 +79,8 @@ ValidarOp2 macro n1
     sValidacion:
     
 endm
-
+  
+; LLena el contenido de un arreglo en otro arreglo
 llenarS macro palabra
     local llenar,next,terminar
     llenar:
@@ -90,16 +96,21 @@ llenarS macro palabra
         
     terminar:
 endm
-
+   
+; Se compara una de las 5 palabras en la sopa de letra
+; con la palabra ingresada
 verificarP macro lon texto inicio final
     local empezarVerificar,terminar
-     
+    
+    ;Si la palabra en la sopa de letra y la palabra ingresada
+    ;no son del mismo tamano determina que son la misma palabra 
     mov al, cadena[1]
     sub al,1
     cmp al, lon
     jb terminar
     ja terminar
     
+    ;Si son del mismo tamano procede a comparar
     empezarVerificar:
         mov si,lon
         llenarS texto
@@ -318,7 +329,8 @@ endm
 .start up    
 
 
-    menuPrincipal: 
+    menuPrincipal:
+        mov aciertos,0 
         mPosrc 1,20
         mImprimC menu1 
     
@@ -573,12 +585,14 @@ salir:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
 
+;Lee un caracter
 leer proc near 
-    mov ah, 01h ;leer desde el teclado 
+    mov ah, 01h
     int 21h
     ret 
 leer endp
-
+    
+;Limpia la pantalla    
 pLimpia proc near 
     mov ah, 0FH
     int 10h
@@ -586,7 +600,12 @@ pLimpia proc near
     int 10h    
     ret
 pLimpia endp
-  
+
+
+;Lee un string y lo almacena en un arreglo
+;En el indice 0 se almacena el tamano del arreglo
+;En el indice 1 se almacena el tamano del string ingresado
+;A partir del indice 3 empiza almacenar el String, en el final del string se incluye el enter
 leerString PROC
     mImprimC ingreso
     mov ax,0000h
@@ -599,6 +618,8 @@ leerString PROC
     RET   
 leerString ENDP   
 
+;Comprueba caracter a caracter si dos strings de igual tamano
+;son iguales
 verificarIn     PROC
     mov bx,0
     mov al, cadena[1]
@@ -607,13 +628,16 @@ verificarIn     PROC
     jb termino
     ja termino
     
+    ;Compara los caracteres, si no son iguales termina el proceso de comparacion
+    ;Si son iguales, comprueba si la palabra en la sopa de letra ya se recorrio
+    ;por completo
     recorrer:
         mov al, cadena[bx+2]
         mov ah, temp[bx]
         cmp al,ah
         jz esfin
         jnz mostrarm
-
+    
     esfin:
         cmp bx,cx
         jz finCadena
@@ -634,12 +658,14 @@ verificarIn     PROC
         cmp esExit,1
         jz esSalida:
         jnz continuar
-        
+    ;Colorea la palabra ingresada, ya que se encuentra en la sopa de letra
+    ;y permite seguir con el juego    
     continuar:
        add aciertos,1
        call resaltarP
        jmp mostrarMatriz 
-        
+    
+    ;Si la palabra ingresada es exit, vuelve al menu principal    
     esSalida:
         call colorearNegro
         mLimpia
@@ -652,7 +678,8 @@ verificarIn     PROC
     termino: 
         RET
 verificarIn     ENDP
-
+ 
+;Pinta las letras de color amarillo 
 resaltarP PROC
     MOV Ax,0600h  ;modo video (creo)
     MOV BH,00001110b ;color que se modifico 0 ->parpadeo 000 -> color fondo 0000 ->Color fuente
@@ -661,7 +688,8 @@ resaltarP PROC
     INT 10H   
     RET
 resaltarP ENDP 
-
+  
+;Pinta las palabras de color blanco  
 colorearNegro PROC
     MOV Ax,0600h
     MOV BH,00001111b
@@ -672,6 +700,7 @@ colorearNegro PROC
                   
 colorearNegro ENDP
 
+;Tranforma las palabras mayusculas a minusculas
 convertir PROC
     mov cx,0
     mov si,0
@@ -681,15 +710,20 @@ convertir PROC
         cmp si,cx
         je FinPalabra
         
+        ;Se compara con el espacio,Si es igual salta a espacio
         cmp al,20h
-        je espacio
+        je espacio     
         
+        ;Se hace la comparacion 'A' 
         cmp al,41h
         jb guardar
         
+        ;Se compara con 'Z'
         cmp al,5ah
         ja guardar
         
+        ;Si la letra esta en el rango de las mayusculas le suma 20h para que 
+        ;se convierta en minuscula
         add al,20h
         
     guardar:
@@ -703,8 +737,7 @@ convertir PROC
         
         
      FinPalabra:
-        RET
-    
+        RET    
     
 convertir ENDP
 
