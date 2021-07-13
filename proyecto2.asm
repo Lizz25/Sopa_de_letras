@@ -348,8 +348,6 @@ endm
         cmp op,33h
         je opcion3
         jnz salir
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Opcion1: Animales;;;;;;;;;;;;;;;;;;;;;;;;;;; 
     
     opcion1: 
         mLimpia 
@@ -381,32 +379,32 @@ endm
         cmp opcionValida,0
         jz ObtenerOpA
     
-    mostrarMatriz:
+    mostrarMatriz: ;Inicia Juego
         mLimpia
         mPosrc 1,20
         
-    VerCategoria:
+    VerCategoria:  ;Verifica que categoria escogio el usuario
         cmp op, 31h
         je Animales
         cmp op,32h
         je Transportes
         jnz LProgramacion
      
-    Animales:
+    Animales:      ;Si escogio Animales, verifica si escogio juego 1 o 2
         mImprimC mOp1  
         mPosrc 3,8
         cmp op2, 31h
         jz Animales1
         jnz Animales2
     
-    Transportes:
+    Transportes:   ;Si escogio Transportes, verifica si escogio juego 1 o 2
         mImprimC mOp2  
         mPosrc 3,8
         cmp op2, 31h
         jz Transportes1
         jnz Transportes2
     
-    LProgramacion:
+    LProgramacion: ;Si escogio Lenguajes de programacion, verifica si escogio juego 1 o 2
         mImprimC mOp3  
         mPosrc 3,8
         cmp op2, 31h
@@ -414,7 +412,7 @@ endm
         jnz LProgramacion2
     
         
-    Animales1:   
+    Animales1:  ;Juego 1 de Animales   
         mImprimC sopaA1
         cmp aciertos,5
         jz gano1
@@ -425,11 +423,11 @@ endm
             mPausa
             call colorearNegro
             mLimpia
-            jmp menuPrincipal
+            jmp salir
             
 
         pedirPalabra1:
-        call leerString       
+            call leerString       
     
         call convertir
         mov esExit,1
@@ -442,7 +440,7 @@ endm
         verificarP 6 tiburon 0712h 0C12h   
         verificarP 3 gato 0B1Ah 0B20h
     
-    Animales2:
+    Animales2:  ;Juego 2 de Animales
         mImprimC sopaA2
         cmp aciertos,5
         jz gano2
@@ -453,7 +451,7 @@ endm
             mPausa
             call colorearNegro
             mLimpia
-            jmp menuPrincipal
+            jmp salir
 
         pedirPalabra2:
         call leerString       
@@ -469,7 +467,7 @@ endm
         verificarP 5 jirafa 0A1Ah 0F1Ah   
         verificarP 7 avestruz 060Ch 061Ah
     
-    Transportes1:
+    Transportes1:  ;Juego 1 de Transportes
         mImprimC sopaT1
         cmp aciertos,5
         jz gano3
@@ -480,7 +478,7 @@ endm
             mPausa
             call colorearNegro
             mLimpia
-            jmp menuPrincipal
+            jmp salir
 
         pedirPalabra3:
         call leerString       
@@ -496,7 +494,7 @@ endm
         verificarP 8 bicicleta 081Ah 101Ah   
         verificarP 4 avion 0D10h 0D18h
     
-    Transportes2:
+    Transportes2:  ;Juego 2 de Transportes
         mImprimC sopaT2
         cmp aciertos,5
         jz gano4
@@ -507,7 +505,7 @@ endm
             mPausa
             call colorearNegro
             mLimpia
-            jmp menuPrincipal
+            jmp salir
 
         pedirPalabra4:
         call leerString       
@@ -523,7 +521,7 @@ endm
         verificarP 4 ferry 040Ch 080Ch   
         verificarP 4 canoa 0316h 0716h
     
-    LProgramacion1:
+    LProgramacion1: ;Juego 1 de Lenguajes de Programacion
         mImprimC sopaP1
         cmp aciertos,5
         jz gano5
@@ -534,7 +532,7 @@ endm
             mPausa    
             call colorearNegro
             mLimpia
-            jmp menuPrincipal
+            jmp salir
 
         pedirPalabra5:
         call leerString       
@@ -550,7 +548,7 @@ endm
         verificarP 4 swift 0D18h 0D20h   
         verificarP 3 dart 0512h 0812h
     
-    LProgramacion2:
+    LProgramacion2: ;Juego 2 de Lenguajes de Programacion
         mImprimC sopaP2
         cmp aciertos,5
         jz gano6
@@ -561,7 +559,7 @@ endm
             mPausa
             call colorearNegro
             mLimpia
-            jmp menuPrincipal
+            jmp salir
 
         pedirPalabra6:
         call leerString       
@@ -669,7 +667,7 @@ verificarIn     PROC
     esSalida:
         call colorearNegro
         mLimpia
-        jmp menuPrincipal
+        jmp salir
     
 
     mostrarm:
