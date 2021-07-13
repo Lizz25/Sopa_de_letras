@@ -422,8 +422,8 @@ endm
         gano1:
             mImprimC ganador
             mPausa
-            call colorearNegro
-            mLimpia
+            ;call colorearNegro
+            ;mLimpia
             jmp salir
             
 
@@ -453,8 +453,8 @@ endm
         gano2:
             mImprimC ganador
             mPausa
-            call colorearNegro
-            mLimpia
+            ;call colorearNegro
+            ;mLimpia
             jmp salir
 
         pedirPalabra2:
@@ -483,8 +483,8 @@ endm
         gano3:
             mImprimC ganador
             mPausa
-            call colorearNegro
-            mLimpia
+            ;call colorearNegro
+            ;mLimpia
             jmp salir
 
         pedirPalabra3:
@@ -513,8 +513,8 @@ endm
         gano4:
             mImprimC ganador
             mPausa
-            call colorearNegro
-            mLimpia
+            ;call colorearNegro
+            ;mLimpia
             jmp salir
 
         pedirPalabra4:
@@ -543,8 +543,8 @@ endm
         gano5:
             mImprimC ganador
             mPausa    
-            call colorearNegro
-            mLimpia
+            ;call colorearNegro
+            ;mLimpia
             jmp salir
 
         pedirPalabra5:
@@ -573,8 +573,8 @@ endm
         gano6:
             mImprimC ganador
             mPausa
-            call colorearNegro
-            mLimpia
+            ;call colorearNegro
+            ;mLimpia
             jmp salir
 
         pedirPalabra6:
@@ -729,8 +729,8 @@ convertir PROC
         
         ;Se compara con el espacio,Si es igual salta a espacio
         cmp al,20h
-        je espacio     
-        
+        je espacio 
+            
         ;Se hace la comparacion 'A' 
         cmp al,41h
         jb guardar
@@ -754,8 +754,7 @@ convertir PROC
         
         
      FinPalabra:
-        RET    
-    
+        RET       
 convertir ENDP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
