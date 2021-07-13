@@ -155,6 +155,7 @@ endm
     volver db 0 
     msjError db CR,LF,TB, "Ingrese una opcion correcta: $"
     ganador db CR,LF,"FELICIDADES!! GANASTE...",CR,LF,"$"
+    rendicion db CR,LF,"Para rendirse ingrese la palabra exit",CR,LF,"$"
     
     juego db "Escoja una opcion de juego" ,LF,CR,TB
           db "Juego 1"                    ,LF,CR,TB
@@ -427,6 +428,7 @@ endm
             
 
         pedirPalabra1:
+            mImprimC rendicion
             call leerString       
     
         call convertir
@@ -437,9 +439,11 @@ endm
         verificarP 3 leon 0708h 0A08h
         verificarP 4 perro 030Ch 0314h
         verificarP 5 delfin 0518h 0522h
-        verificarP 6 tiburon 0712h 0C12h   
+        verificarP 6 tiburon 0712h 0D12h   
         verificarP 3 gato 0B1Ah 0B20h
-    
+        
+        jmp mostrarMatriz 
+        
     Animales2:  ;Juego 2 de Animales
         mImprimC sopaA2
         cmp aciertos,5
@@ -454,6 +458,7 @@ endm
             jmp salir
 
         pedirPalabra2:
+        mImprimC rendicion
         call leerString       
     
         call convertir
@@ -466,7 +471,9 @@ endm
         verificarP 6 caballo 0A0Ch 0A18h
         verificarP 5 jirafa 0A1Ah 0F1Ah   
         verificarP 7 avestruz 060Ch 061Ah
-    
+        
+        jmp mostrarMatriz 
+        
     Transportes1:  ;Juego 1 de Transportes
         mImprimC sopaT1
         cmp aciertos,5
@@ -481,6 +488,7 @@ endm
             jmp salir
 
         pedirPalabra3:
+        mImprimC rendicion
         call leerString       
     
         call convertir
@@ -493,7 +501,9 @@ endm
         verificarP 3 moto 060Eh 0614h
         verificarP 8 bicicleta 081Ah 101Ah   
         verificarP 4 avion 0D10h 0D18h
-    
+        
+        jmp mostrarMatriz 
+        
     Transportes2:  ;Juego 2 de Transportes
         mImprimC sopaT2
         cmp aciertos,5
@@ -508,6 +518,7 @@ endm
             jmp salir
 
         pedirPalabra4:
+        mImprimC rendicion
         call leerString       
     
         call convertir
@@ -519,7 +530,9 @@ endm
         verificarP 3 yate 100Ah 1010h
         verificarP 8 submarino 0A14h 0A24h
         verificarP 4 ferry 040Ch 080Ch   
-        verificarP 4 canoa 0316h 0716h
+        verificarP 4 canoa 0316h 0716h 
+        
+        jmp mostrarMatriz 
     
     LProgramacion1: ;Juego 1 de Lenguajes de Programacion
         mImprimC sopaP1
@@ -535,6 +548,7 @@ endm
             jmp salir
 
         pedirPalabra5:
+        mImprimC rendicion
         call leerString       
     
         call convertir
@@ -547,6 +561,8 @@ endm
         verificarP 5 python 0C0Ah 110Ah
         verificarP 4 swift 0D18h 0D20h   
         verificarP 3 dart 0512h 0812h
+        
+        jmp mostrarMatriz 
     
     LProgramacion2: ;Juego 2 de Lenguajes de Programacion
         mImprimC sopaP2
@@ -562,6 +578,7 @@ endm
             jmp salir
 
         pedirPalabra6:
+        mImprimC rendicion
         call leerString       
     
         call convertir
@@ -574,6 +591,8 @@ endm
         verificarP 3 java 0F1Ah 0F20h
         verificarP 5 python 0312h 031Ch   
         verificarP 5 kotlin 0420h 0920h
+        
+        jmp mostrarMatriz 
     
 
   
